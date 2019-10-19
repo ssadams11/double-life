@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Triple Life Rolling OR</title>
+</head>
+<body>
+<canvas id="a" width="600" height="600"></canvas>
+<canvas id="b" width="600" height="600"></canvas>
+<canvas id="c" width="600" height="600"></canvas>
+<script>
+    /**
+     * Conway's Game of Life.
+     *
+     * A simple Javascript implementation by ankr.
+     *
+     * @author http://ankr.dk
+     */
+    window.canvases = {}
+    window.golCells = {}
+    function buildGOLs(canvasIDs,patterns,origins) {
+        for (var cid of canvasIDs) {
+            window.canvases[cid] = canvas = document.getElementById(cid).getContext('2d')
+            window.golCells[cid] = [];
+            canvas.strokeStyle = '#e1e1e1';
+            canvas.fillStyle = 'cadetblue';
+        }
+        init(canvasIDs,patterns,origins);
+    }
+    /**
+     * Initialize game.
+     *
+     * Will place a Gosper glider gun in the world and start simulation.
+     */
+    function init(canvasIDs,patternNames, origins) {
+        for (var index = 0; index < canvasIDs.length; index++) {
+            cid = canvasIDs[index]
+
+            cells = window.golCells[cid]
+            canvas = window.canvases[cid]
+                for (var i = 0; i < 64; i++) {
+                    cells[i] = [];
+                    for (var j = 0; j < 64; j++) {
+                        cells[i][j] = 0;
+                    }
+                }
+
+            patternName = patternNames[index]
+                if (patternName != "blank"){
+                if (patternName == 'random') {
+                    for (var i = 0; i < 64; i++) {
+                        cells[i] = [];
+                        for (var j = 0; j < 64; j++) {
+                            cells[i][j] = Math.round(Math.random());
+                        }
+                    }
+                }
+                // Prefilled cells
+                    glider = [
+                        [2, 0], [2, 1], [2, 2], [1, 2], [0, 1]
+                    ]
+                    antiglider = [
+                        [0, 0], [0, 1], [0, 2], [1, 2], [2, 1]
+                    ]
+                gliderGun =
+                    [
+                        // Gosper glider gun
+                        [1, 5], [1, 6], [2, 5], [2, 6], [11, 5], [11, 6], [11, 7], [12, 4], [12, 8], [13, 3], [13, 9], [14, 3], [14, 9], [15, 6], [16, 4], [16, 8], [17, 5], [17, 6], [17, 7], [18, 6], [21, 3], [21, 4], [21, 5], [22, 3], [22, 4], [22, 5], [23, 2], [23, 6], [25, 1], [25, 2], [25, 6], [25, 7], [35, 3], [35, 4], [36, 3], [36, 4],
+                    ]
+                randomCorner = [
+                    // Random cells
+                    // If you wait enough time these will eventually take part
+                    // in destroying the glider gun, and the simulation will be in a "static" state.
+                    [60, 47], [61, 47], [62, 47],
+                    [60, 48], [61, 48], [62, 48],
+                    [60, 49], [61, 49], [62, 49],
+                    [60, 51], [61, 51], [62, 51],
+                ]
+                startingPattern = []
+                    origin = origins[index]
+                    if (patternName == 'glider') {
+                        startingPattern = []
+                        glider.forEach((p,i)=>{
+                            p1 = [p[0] + origin[0], p[1]+origin[1]]
+                            startingPattern.push(p1)
+                        })
+                    }
+                    if (patternName == 'antiglider') {
+                        startingPattern = []
+                        antiglider.forEach((p,i)=>{
+                            p1 = [p[0] + origin[0], p[1]+origin[1]]
+                            startingPattern.push(p1)
+                        })
+                    }
+                    if (patternName == 'gliderGun') {
+                    startingPattern = gliderGun
+                }
+                if (patternName == 'randomCorner') {
+                    startingPattern = randomCorner
+                }
+                startingPattern.forEach(function (point) {
+                    cells[point[0]][point[1]] = 1;
+                });
+            }
+        }
+        update(canvasIDs);
+    }
+
+    /**
+     * Check which cells are still alive.
+     */
+    function update(canvasIDs) {
+        for (var index = 0; index < canvasIDs.length; index++) {
+            cid = canvasIDs[index]
+            cells = window.golCells[cid]
+            canvas = window.canvases[cid]
+            var result = [];
+
+            /**
+             * Return amount of alive neighbours for a cell
+             */
+            function _countNeighbours(x, y) {
+                var amount = 0;
+
+                function _isFilled(x, y) {
+                    return cells[x] && cells[x][y];
+                }
+
+                if (_isFilled(x - 1, y - 1)) amount++;
+                if (_isFilled(x, y - 1)) amount++;
+                if (_isFilled(x + 1, y - 1)) amount++;
+                if (_isFilled(x - 1, y)) amount++;
+                if (_isFilled(x + 1, y)) amount++;
+                if (_isFilled(x - 1, y + 1)) amount++;
+                if (_isFilled(x, y + 1)) amount++;
+                if (_isFilled(x + 1, y + 1)) amount++;
+
+                return amount;
+            }
+
+            cells.forEach(function (row, x) {
+                result[x] = [];
+                row.forEach(function (cell, y) {
+                    var alive = 0,
+                        count = _countNeighbours(x, y);
+
+                    if (cell > 0) {
+                        alive = count === 2 || count === 3 ? 1 : 0;
+                    } else {
+                        alive = count === 3 ? 1 : 0;
+                    }
+
+                    result[x][y] = alive;
+                });
+            });
+
+            window.golCells[cid] = result;
+           if (index < (canvasIDs.length - 1)){
+               nextIndex = index + 1
+           }else{
+               nextIndex = 0
+           }
+           nextCells = window.golCells[canvasIDs[nextIndex]]
+            i = intersect // x=intersect is the intersection row
+                for (var j = 0; j < 64; j++) {
+                    nextCells[i][j] = cells[i][j]  || nextCells[i][j] ? 1 : 0  //map the state of cells[intersect] to nextcells[intersect]
+                }
+            draw([cid])
+
+
+        }
+       // draw(canvasIDs);
+    }
+
+    /**
+     * Draw cells on canvas
+     */
+    function draw(canvasIDs) {
+        for (var cid of canvasIDs) {
+            cells = window.golCells[cid]
+            canvas = window.canvases[cid]
+
+            canvas.clearRect(0, 0, 600, 600);
+            cells.forEach(function (row, x) {
+                row.forEach(function (cell, y) {
+                    canvas.beginPath();
+                    canvas.rect(x * 8, y * 8, 8, 8);
+                    if (cell) {
+                        canvas.fill();
+                    } else {
+                        canvas.strokeStyle = "#e1e1e1"
+                        canvas.stroke();
+                    }
+                    if(x == intersect){
+                        canvas.strokeStyle = "red"
+                        canvas.stroke()
+                    }
+                });
+            });
+        }
+        //window.requestAnimationFrame(update); // Too fast!
+    }
+    canvasIDs = ['a','b','c']
+        patterns = ['random','random','random']
+    origins = [[30,20],[60,0]]
+    intersect = 32
+    buildGOLs(canvasIDs,patterns,origins)
+    setInterval(function() {update(canvasIDs);}, 50);
+//    setInterval(function() {update(['b']);}, 280);
+
+</script>
+</body>
+</html>

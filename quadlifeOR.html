@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Quad Life Rolling OR</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <H2>Quad Life</H2>
+        <p>This is a simulation of 4 intersecting Life planes.  Each uses the same standard rules from Conway's Game of Life.  Each plane shares state with every other plane along a single row, marked in red.</p>
+        <p>Each plane is computed in turn (A->B->C->D) and after each plane the new state of the shared row is OR-ed to the next plane.  After D, the resulting shared row is OR-ed to A.</p>
+        <H3>For all Life planes</H3>
+        <div class="col-sm-12">
+            <button onclick="startLife()">start Life</button>
+            <button onclick="stopLife()">stop Life</button>
+            <button onclick="clearAllCells()">clear all planes</button>
+            <button onclick="randomSharedCells()">randomize shared row only</button>
+            <button onclick="randomSharedNeighborCells()">randomize shared row + neighbors on all planes</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="row">
+                <H3>Life plane A</H3>
+                <div class="col-sm-12">
+                    <button onclick="clearCells('a')">clear</button>
+                    <button onclick="clearSharedCells()">clear shared row only</button>
+                    <button onclick="clearSharedNeighborCells()">clear shared row + neighbors</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button onclick="randomize('a',0.1)">rnd 0.1</button>
+                    <button onclick="randomize('a',0.2)">rnd 0.2</button>
+                    <button onclick="randomize('a',0.5)">rnd 0.5</button>
+                    <button onclick="randomize('a',0.7)">rnd 0.7</button>
+                    <button onclick="randomize('a',0.8)">rnd 0.8</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+                    <button onclick="addRightwardGlider('a')">glider--></button>
+                    <button onclick="addRightwardGliderAtRandom('a')">glider@rnd--></button>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <button onclick="addLeftwardGlider('a')"><--glider</button>
+                    <button onclick="addLeftwardGliderAtRandom('a')"><--glider@rnd</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+
+                    <button onclick="addGliderGun('a')">gliderGun--></button>
+                    <button onclick="addRandomBlockLeft('a')">rnd block</button>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <button onclick="addRandomBlockRight('a')">rnd block</button>
+                </div>
+            </div>
+            <div class="row">
+                <canvas id="a" width="512" height="512"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="row">
+                <H3>Life plane B</H3>
+                <div class="col-sm-12">
+                    <button onclick="clearCells('b')">clear</button>
+                    <button onclick="clearSharedCells()">clear shared row only</button>
+                    <button onclick="clearSharedNeighborCells()">clear shared row + neighbors</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button onclick="randomize('b',0.1)">rnd 0.1</button>
+                    <button onclick="randomize('b',0.2)">rnd 0.2</button>
+                    <button onclick="randomize('b',0.5)">rnd 0.5</button>
+                    <button onclick="randomize('b',0.7)">rnd 0.7</button>
+                    <button onclick="randomize('b',0.8)">rnd 0.8</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+                    <button onclick="addRightwardGlider('b')">glider--></button>
+                    <button onclick="addRightwardGliderAtRandom('b')">glider@rnd--></button>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <button onclick="addLeftwardGlider('b')"><--glider</button>
+                    <button onclick="addLeftwardGliderAtRandom('b')"><--glider@rnd</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+
+                    <button onclick="addGliderGun('b')">gliderGun--></button>
+                    <button onclick="addRandomBlockLeft('b')">rnd block</button>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <button onclick="addRandomBlockRight('b')">rnd block</button>
+                </div>
+            </div>
+            <div class="row">
+                <canvas id="b" width="512" height="512"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="row">
+                <H3>Life plane C</H3>
+                <div class="col-sm-12">
+                    <button onclick="clearCells('c')">clear</button>
+                    <button onclick="clearSharedCells()">clear shared row only</button>
+                    <button onclick="clearSharedNeighborCells()">clear shared row + neighbors</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button onclick="randomize('c',0.1)">rnd 0.1</button>
+                    <button onclick="randomize('c',0.2)">rnd 0.2</button>
+                    <button onclick="randomize('c',0.5)">rnd 0.5</button>
+                    <button onclick="randomize('c',0.7)">rnd 0.7</button>
+                    <button onclick="randomize('c',0.8)">rnd 0.8</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+                    <button onclick="addRightwardGlider('c')">glider--></button>
+                    <button onclick="addRightwardGliderAtRandom('c')">glider@rnd--></button>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <button onclick="addLeftwardGlider('c')"><--glider</button>
+                    <button onclick="addLeftwardGliderAtRandom('c')"><--glider@rnd</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+
+                    <button onclick="addGliderGun('c')">gliderGun--></button>
+                    <button onclick="addRandomBlockLeft('c')">rnd block</button>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <button onclick="addRandomBlockRight('c')">rnd block</button>
+                </div>
+            </div>
+            <div class="row">
+                <canvas id="c" width="512" height="512"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="row">
+                <H3>Life plane D</H3>
+                <div class="col-sm-12">
+                    <button onclick="clearCells('d')">clear</button>
+                    <button onclick="clearSharedCells()">clear shared row only</button>
+                    <button onclick="clearSharedNeighborCells()">clear shared row + neighbors</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button onclick="randomize('d',0.1)">rnd 0.1</button>
+                    <button onclick="randomize('d',0.2)">rnd 0.2</button>
+                    <button onclick="randomize('d',0.5)">rnd 0.5</button>
+                    <button onclick="randomize('d',0.7)">rnd 0.7</button>
+                    <button onclick="randomize('d',0.8)">rnd 0.8</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+                    <button onclick="addRightwardGlider('d')">glider--></button>
+                    <button onclick="addRightwardGliderAtRandom('d')">glider@rnd--></button>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <button onclick="addLeftwardGlider('d')"><--glider</button>
+                    <button onclick="addLeftwardGliderAtRandom('d')"><--glider@rnd</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+
+                    <button onclick="addGliderGun('d')">gliderGun--></button>
+                    <button onclick="addRandomBlockLeft('d')">rnd block</button>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <button onclick="addRandomBlockRight('d')">rnd block</button>
+                </div>
+            </div>
+            <div class="row">
+                <canvas id="d" width="512" height="512"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    /**
+     * Conway's Game of Life.
+     *
+     * A simple Javascript implementation by ankr.
+     *
+     * @author http://ankr.dk
+     */
+    window.canvases = {}
+    window.golCells = {}
+
+    function buildGOLs(canvasIDs, patterns, origins) {
+        for (var cid of canvasIDs) {
+            window.canvases[cid] = canvas = document.getElementById(cid).getContext('2d')
+            window.golCells[cid] = [];
+            canvas.strokeStyle = '#e1e1e1';
+            canvas.fillStyle = 'cadetblue';
+        }
+        init(canvasIDs, patterns, origins);
+    }
+
+    /**
+     * Initialize game.
+     *
+     * Will place a Gosper glider gun in the world and start simulation.
+     */
+    function init(canvasIDs, patternNames, origins) {
+        for (var index = 0; index < canvasIDs.length; index++) {
+            cid = canvasIDs[index]
+
+            cells = window.golCells[cid]
+            canvas = window.canvases[cid]
+            clearCells(cid)
+
+            patternName = patternNames[index]
+            if (patternName != "blank") {
+                if (patternName == 'random') {
+                    randomize(cid, 0.5)
+                }
+                startingPattern = []
+                origin = origins[index]
+                if (patternName == 'glider') {
+                    addLeftwardGliderAt(cid, origin)
+                }
+                if (patternName == 'antiglider') {
+                    addRightwardGliderAt(cid, origin)
+                }
+                if (patternName == 'gliderGun') {
+                    addGliderGun(cid)
+                }
+                if (patternName == 'randomCorner') {
+                    addRandomCorner(cid)
+                }
+            }
+        }
+
+        update(canvasIDs);
+    }
+
+    /**
+     * Check which cells are still alive.
+     */
+    function update(canvasIDs) {
+        for (var index = 0; index < canvasIDs.length; index++) {
+            cid = canvasIDs[index]
+            cells = window.golCells[cid]
+            canvas = window.canvases[cid]
+            var result = [];
+
+            /**
+             * Return amount of alive neighbours for a cell
+             */
+            function _countNeighbours(x, y) {
+                var amount = 0;
+
+                function _isFilled(x, y) {
+                    return cells[x] && cells[x][y];
+                }
+
+                if (_isFilled(x - 1, y - 1)) amount++;
+                if (_isFilled(x, y - 1)) amount++;
+                if (_isFilled(x + 1, y - 1)) amount++;
+                if (_isFilled(x - 1, y)) amount++;
+                if (_isFilled(x + 1, y)) amount++;
+                if (_isFilled(x - 1, y + 1)) amount++;
+                if (_isFilled(x, y + 1)) amount++;
+                if (_isFilled(x + 1, y + 1)) amount++;
+
+                return amount;
+            }
+
+            cells.forEach(function (row, x) {
+                result[x] = [];
+                row.forEach(function (cell, y) {
+                    var alive = 0,
+                        count = _countNeighbours(x, y);
+
+                    if (cell > 0) {
+                        alive = count === 2 || count === 3 ? 1 : 0;
+                    } else {
+                        alive = count === 3 ? 1 : 0;
+                    }
+
+                    result[x][y] = alive;
+                });
+            });
+
+            window.golCells[cid] = result;
+            if (index < (canvasIDs.length - 1)) {
+                nextIndex = index + 1
+            } else {
+                nextIndex = 0
+            }
+            nextCells = window.golCells[canvasIDs[nextIndex]]
+            i = intersect // x=intersect is the intersection row
+            for (var j = 0; j < width; j++) {
+                nextCells[i][j] = cells[i][j] || nextCells[i][j] ? 1 : 0 //map the state of cells[intersect] to nextcells[intersect]
+            }
+            draw([cid])
+
+
+        }
+// draw(canvasIDs);
+    }
+
+    /**
+     * Draw cells on canvas
+     */
+    function draw(canvasIDs) {
+        for (var cid of canvasIDs) {
+            cells = window.golCells[cid]
+            canvas = window.canvases[cid]
+
+            canvas.clearRect(0, 0, 512, 512);
+            canvas.beginPath()
+            canvas.rect(0, 0, 512, 512)
+            canvas.stroke()
+
+            cells.forEach(function (row, x) {
+                row.forEach(function (cell, y) {
+                    canvas.beginPath();
+                    canvas.rect(x * cellWidth, y * cellWidth, cellWidth, cellWidth);
+                    if (cell) {
+                        canvas.fill();
+                        512
+                    } else {
+                        //canvas.strokeStyle = "#e1e1e1"
+                        // canvas.stroke();
+                    }
+                    if (x == intersect) {
+                        canvas.strokeStyle = "red"
+                        canvas.stroke()
+                    }
+                });
+            });
+        }
+//window.requestAnimationFrame(update); // Too fast!
+    }
+
+    function clearCells(cid) {
+        cells = window.golCells[cid]
+        for (var i = 0; i < width; i++) {
+            cells[i] = [];
+            for (var j = 0; j < width; j++) {
+                cells[i][j] = 0;
+            }
+        }
+        draw(window.TheCanvasIDs)
+    }
+
+    function clearAllCells() {
+        for (var cid of TheCanvasIDs) {
+            clearCells(cid)
+        }
+        draw(window.TheCanvasIDs)
+    }
+
+    function clearSharedCells() {
+
+        for (var cid of TheCanvasIDs) {
+            cells = window.golCells[cid]
+            for (var j = 0; j < width; j++) {
+                cells[intersect][j] = 0;
+            }
+        }
+        draw(window.TheCanvasIDs)
+    }
+
+    function randomSharedCells() {
+
+        for (var cid of TheCanvasIDs) {
+            cells = window.golCells[cid]
+            for (var j = 0; j < width; j++) {
+                cells[intersect][j] = Math.random() <= 0.5 ? 1 : 0;
+            }
+        }
+        draw(window.TheCanvasIDs)
+    }
+
+    function randomSharedNeighborCells() {
+
+        for (var cid of TheCanvasIDs) {
+            cells = window.golCells[cid]
+            for (var j = 0; j < width; j++) {
+                cells[intersect][j] = Math.random() <= 0.5 ? 1 : 0;
+                cells[intersect - 1][j] = Math.random() <= 0.5 ? 1 : 0;
+                cells[intersect + 1][j] = Math.random() <= 0.5 ? 1 : 0;
+            }
+        }
+        draw(window.TheCanvasIDs)
+    }
+
+    function clearSharedNeighborCells() {
+
+        for (var cid of TheCanvasIDs) {
+            cells = window.golCells[cid]
+            for (var j = 0; j < width; j++) {
+                cells[intersect][j] = 0;
+                cells[intersect - 1][j] = 0;
+                cells[intersect + 1][j] = 0;
+            }
+        }
+        draw(window.TheCanvasIDs)
+
+    }
+
+    function addRightwardGlider(cid) {
+        addRightwardGliderAt(cid, [10, 10])
+
+    }
+
+    function addLeftwardGlider(cid) {
+        addLeftwardGliderAt(cid, [width - 10, 10])
+    }
+
+    function addGliderGun(cid) {
+        addGliderGunAt(cid, [0, 0])
+    }
+
+    function addRandomBlockRight(cid) {
+        rndX = Math.round(Math.random() * (width / 2)) + (width / 2) - 20
+        rndY = Math.round(Math.random() * (width - 10)) + 5
+        addRandomBlockAt(cid, 20, [rndX, rndY])
+    }
+
+    function addRandomBlockLeft(cid) {
+        rndX = Math.round(Math.random() * (width / 2))
+        rndY = Math.round(Math.random() * (width - 10)) + 5
+        addRandomBlockAt(cid, 20, [rndX, rndY])
+    }
+
+    function addLeftwardGliderAtRandom(cid) {
+        rndX = Math.round(Math.random() * (width / 2)) + (width / 2) - 3
+        rndY = Math.round(Math.random() * (width - 10)) + 5
+        addLeftwardGliderAt(cid, [rndX, rndY])
+    }
+
+    function addRightwardGliderAtRandom(cid) {
+        rndX = Math.round(Math.random() * (width / 2))
+        rndY = Math.round(Math.random() * (width - 10)) + 5
+        addRightwardGliderAt(cid, [rndX, rndY])
+    }
+
+    function addRightwardGliderAt(cid, origin) {
+        glider = [
+            [2, 0], [2, 1], [2, 2], [1, 2], [0, 1]
+        ]
+        addPattern(cid, origin, glider)
+    }
+
+    function addLeftwardGliderAt(cid, origin) {
+        antiglider = [
+            [0, 0], [0, 1], [0, 2], [1, 2], [2, 1]
+        ]
+        addPattern(cid, origin, antiglider)
+    }
+
+    function addRandomBlockAt(cid, w, origin) {
+        block = []
+        for (var i = 0; i < w; i++) {
+            for (var j = 0; j < w; j++) {
+                if (Math.random() <= 0.5) {
+                    block.push([i, j])
+                }
+            }
+        }
+        addPattern(cid, origin, block)
+    }
+
+    function addGliderGunAt(cid, origin) {
+        gliderGun =
+            [
+                [1, 5], [1, 6], [2, 5], [2, 6], [11, 5], [11, 6], [11, 7], [12, 4], [12, 8], [13, 3], [13, 9], [14, 3], [14, 9], [15,
+                6], [16, 4], [16, 8], [17, 5], [17, 6], [17, 7], [18, 6], [21, 3], [21, 4], [21, 5], [22, 3], [22, 4], [22, 5], [23, 2],
+                [23, 6], [25, 1], [25, 2], [25, 6], [25, 7], [35, 3], [35, 4], [36, 3], [36, 4],
+            ]
+        addPattern(cid, origin, gliderGun)
+    }
+
+    function addPattern(cid, origin, pattern) {
+        cells = window.golCells[cid]
+        startingPattern = []
+        pattern.forEach((p, i) => {
+            p1 = [p[0] + origin[0], p[1] + origin[1]]
+            startingPattern.push(p1)
+        })
+        addCells(cid, startingPattern)
+    }
+
+    function addCells(cid, pattern) {
+        cells = window.golCells[cid]
+        pattern.forEach(function (point) {
+            cells[point[0]][point[1]] = 1;
+        });
+        draw(window.TheCanvasIDs)
+
+    }
+
+    function randomize(cid, percentBlack) {
+        cells = window.golCells[cid]
+        randomizeCells(cells, percentBlack)
+        draw(window.TheCanvasIDs)
+    }
+
+    function randomizeCells(cells, percentBlack) {
+        for (var i = 0; i < width; i++) {
+            cells[i] = [];
+            for (var j = 0; j < width; j++) {
+                cells[i][j] = Math.random() <= percentBlack ? 1 : 0
+            }
+        }
+    }
+
+    function startLife() {
+        window.LifeInterval = setInterval(function () {
+            update(canvasIDs);
+        }, 50);
+    }
+
+    function stopLife() {
+        clearInterval(window.LifeInterval)
+    }
+
+    canvasIDs = ['a', 'b', 'c', 'd']
+    window.TheCanvasIDs = canvasIDs
+    patterns = ['random', 'random', 'random', 'random']
+    origins = [[30, 20], [60, 0], [60, 0], [60, 0]]
+    width = 128
+    cellWidth = 4
+    intersect = width / 2
+    buildGOLs(canvasIDs, patterns, origins)
+    window.LifeInterval = setInterval(function () {
+        update(canvasIDs);
+    }, 50);
+
+    // setInterval(function() {update(['b']);}, 280);
+
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>
